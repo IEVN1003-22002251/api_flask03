@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+{% import "_macros.html" as macro %}
+
+{% block content %}
+
+<style>
+    
+    .pizza-content-area {
+        background-color: #E6E9F0;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #C5CDE0;
+    }
+    
+    .form-box {
+        background-color: #D3DDEB;
+        border: 1px solid #89a6cf;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        min-height: 120px; 
+    }
+
+    .table-box {
+        background-color: #F0F0F0;
+        border: 1px solid #81a5d5;
+        padding: 10px;
+        border-radius: 5px;
+        min-height: 200px; 
+    }
+    
+    .ventas-box {
+        background-color: #DCDCDC;
+        border: 1px solid #B0B0B0;
+        padding: 15px;
+        border-radius: 5px;
+        min-height: 200px; 
+        color: #333;
+    }
+    .ventas-box h4, .ventas-box b {
+        color: #000; 
+    }
+
+    .ventas-button-container {
+        text-align: center;
+        margin-top: 10px;
+    }
+    
+    .bottom-buttons {
+        margin-top: 20px;
+    }
+    .bottom-buttons .controls {
+        margin-left: 0;
+        text-align: left;
+    }
+</style>
+
+<div class="container pizza-content-area">
+
+    {% if mensaje %}
+        <div class="alert alert-success" role="alert">
+            <h2>{{ mensaje }}</h2>
+        </div>
+    {% endif %}
+
+    <form class="form-horizontal" action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="row-fluid">
+            
+            <div class="span5">
+                <fieldset>
+                    {{ macro.campoNuevo(form.nombre, class="input-large", placeholder="Nombre") }}
+                    {{ macro.campoNuevo(form.direccion, class="input-large", placeholder="Direccion") }}
+                    {{ macro.campoNuevo(form.telefono, class="input-large", placeholder="Telefono") }}
+                </fieldset>
+            </div>
+
+            <div class="span7">
+                <div class="row-fluid">
+                    <div class="span6">
+                        <div class="form-box">
+                            <label>Tamaño Pizza</label>
+                            {{ macro.campoNuevo(form.tamano) }}
+                        </div>
+                    </div>
+                    <div class="span6">
+                        <div class="form-box">
+                            <label>Ingredientes</label>
+                            {{ macro.campoNuevo(form.jamon) }}
+                            {{ macro.campoNuevo(form.pina) }}
+                            {{ macro.campoNuevo(form.champinones) }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row-fluid">
+                    <div class="span6">
+                        {{ macro.campoNuevo(form.num_pizzas, class="input-small") }}
+                    </div>
+                    <div class="span6">
+                        <div class="control-group">
+                            <div class="controls">
+                                {{ form.agregar(class="btn btn-primary") }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div> <hr style="border-top: 2px solid #C5CDE0;">
+
+        <div class="row-fluid">
+            
+            <div class="span8">
+                <div class="table-box">
+                    <table class="table" style="margin-bottom: 0;">
+                        <thead>
+                            <tr>
+                                <th>Tamaño</th>
+                                <th>Ingredientes</th>
+                                <th>Num. Pizzas</th>
+                                <th>SubTotal</th>
+                                <th>Quitar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in pedido %}
+                            <tr>
+                                <td>{{ p.tamano }}</td>
+                                <td>{{ p.ingredientes }}</td>
+                                <td>{{ p.num_pizzas }}</td>
+                                <td>${{ p.subtotal }}</td>
+                                <td>
+                                    <a href="{{ url_for('quitar_pizza', index=loop.index0) }}" class="btn btn-danger btn-mini">
+                                        Quitar
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="control-group">
+                    <div class="controls">
+                        {{ form.terminar(class="btn btn-success btn-large") }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="span4">
+                <div class="ventas-box">
+                    <fieldset>
+                        <legend>Ventas del dia</legend>
+                        
+                        {% if ventas_cliente %}
+                            {% for nombre, total in ventas_cliente.items() %}
+                                <p style="margin: 0;"><b>{{ nombre }} total ${{ total }}</b></p>
+                            {% endfor %}
+                            <hr>
+                            <h4>Ventas totales del dia: ${{ total_dia }}</h4>
+                        {% else %}
+                            <p>Aún no hay ventas registradas.</p>
+                        {% endif %}
+                    </fieldset>
+                </div>
+                
+                <div class="ventas-button-container">
+                     {{ form.mostrar_ventas(class="btn") }}
+                </div>
+            </div>
+
+        </div> </form>
+</div> {% endblock %}
